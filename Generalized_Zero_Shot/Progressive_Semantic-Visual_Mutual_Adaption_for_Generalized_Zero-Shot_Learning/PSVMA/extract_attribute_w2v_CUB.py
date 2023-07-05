@@ -23,16 +23,23 @@ import pickle
 # BASE_DIR = os.environ.get('GENSIM_DATA_DIR')
 # print(BASE_DIR)
 
+###########################
 print('Loading pretrain w2v modeling')
 model_name = 'word2vec-google-news-300'#best modeling
 model = api.load(model_name)
 dim_w2v = 300
 print('Done loading modeling')
+##########################
+
 #%%
 replace_word = [('spatulate','broad'),('upperparts','upper parts'),('grey','gray')]
 #%%
 # path = 'datasets/Attribute/attribute/{}/attributes.txt'.format('CUB')
-path = 'datasets/attribute/{}/attributes.txt'.format('CUB')
+# path = 'datasets/attribute/{}/attributes.txt'.format('CUB')
+base_path = "/mnt/d/My_things/Understanding_DL_Papers/Generalized_Zero_Shot/Progressive_Semantic-Visual_Mutual_Adaption_for_Generalized_Zero-Shot_Learning/datasets/CUB_200_2011"
+
+path = os.path.join(base_path, 'attributes.txt')
+
 df=pd.read_csv(path,sep=' ',header = None, names = ['idx','des'])
 des = df['des'].values
 #%% filter
@@ -48,7 +55,9 @@ for pair in replace_word:
 print('Done replace OOD words')
 #%%
 df['new_des']=new_des
-df.to_csv('datasets/attribute/CUB/new_des.csv')
+
+save_path = os.path.join(base_path, 'new_des.csv')
+df.to_csv(save_path)
 print('Done preprocessing attribute des')
 #%%
 all_w2v = []
@@ -68,5 +77,8 @@ for s in new_des:
 all_w2v=np.concatenate(all_w2v,axis=0)
 # pdb.set_trace()
 #%%
-with open('datasets/Attribute/w2v/CUB_attribute.pkl','wb') as f:
+attrib_path = "/mnt/d/My_things/Understanding_DL_Papers/Generalized_Zero_Shot/Progressive_Semantic-Visual_Mutual_Adaption_for_Generalized_Zero-Shot_Learning/datasets/CUB_200_2011/"
+os.makedirs(attrib_path,exist_ok=True)
+attrib_path = os.path.join(attrib_path, 'attribute_w2v.pkl')
+with open(attrib_path,'wb') as f:
     pickle.dump(all_w2v,f)
